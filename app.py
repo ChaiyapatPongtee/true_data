@@ -16,7 +16,7 @@ st.write("""
     Over SLA
 """)
 
-st.image(image)
+st.sidebar.image(image)
 
 st.sidebar.title("Filter Data")
 
