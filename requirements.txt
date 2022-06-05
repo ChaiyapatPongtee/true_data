@@ -1,4 +1,6 @@
+pip===22.0.3
 streamlit===1.9.2
 plotly===5.8.0
 pandas===1.4.0
 numpy===1.22.2
+openpyxl===3.0.9
