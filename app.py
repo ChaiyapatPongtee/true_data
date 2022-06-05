@@ -5,8 +5,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 from io import StringIO 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
 import plotly.express as px
 from plotly.subplots import make_subplots
