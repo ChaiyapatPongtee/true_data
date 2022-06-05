@@ -74,7 +74,7 @@ if uploaded_file is not None:
         else:
             if select != "All" and select_severity == "All":
                 df = dataframe.sort_values(by="Fault Date")
-                dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Activity'] == select & (df['Fault Date'] >= start_d) & (df['Fault Date'] <= end_d))]
+                dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Activity'] == select)]
             if select_severity != "All" and select == "All":
                 df = dataframe.sort_values(by="Fault Date")
                 dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Severity'] == select_severity)]
