@@ -43,7 +43,7 @@ with open('style.css') as f:
 uploaded_file = st.file_uploader("Choose a file")
 
 if uploaded_file is not None:
-    dataframe = pd.read_excel(str(uploaded_file.name),sheet_name=1)
+    dataframe = pd.read_excel(uploaded_file.name,sheet_name=1)
     with st.container():
         st.warning("Summary Over SLA")
         col1, col2, col3, col4, col5 = st.columns(5)
