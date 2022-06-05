@@ -4,12 +4,10 @@ div.css-1r6slb0.e1tzin5v2{
     padding: 2% 2% 2% 5%;
     border-radius: 10px;
 }
-/* div.element-container.css-1n0oak0.e1tzin5v3{
-    background-color: #EEEEEE;
-    border: 1px solid #DCDCDC;
-    padding: 2% 2% 2% 5%;
-    border-radius: 10px;
-} */
+img{
+    width: 50% !important;
+}
+
 div.css-ocqkz7.e1tzin5v4{
     border: 1px solid #1AA0D3;
     background-color: #6AD6FF;
