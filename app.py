@@ -48,26 +48,7 @@ uploaded_file = st.file_uploader("Choose a file",type=["xls","xlsx"])
 
 if uploaded_file is not None:
     dataframe = pd.read_excel(uploaded_file,sheet_name=1)
-    with st.container():
-        st.warning("Summary Over SLA")
-        col1, col2, col3, col4, col5 = st.columns(5)
-        col1.metric("NSA1", str(len(dataframe.loc[(dataframe['Severity'] == "NSA1") & (dataframe['Over/Within'] == "Over")])))
-        col2.metric("NSA2", str(len(dataframe.loc[(dataframe['Severity'] == "NSA2") & (dataframe['Over/Within'] == "Over")])))
-        col3.metric("NSA3", str(len(dataframe.loc[(dataframe['Severity'] == "NSA3") & (dataframe['Over/Within'] == "Over")])))
-        col4.metric("NSA4", str(len(dataframe.loc[(dataframe['Severity'] == "NSA4") & (dataframe['Over/Within'] == "Over")])))
-        col5.metric("PSA3", str(len(dataframe.loc[(dataframe['Severity'] == "PSA3") & (dataframe['Over/Within'] == "Over")])))
-
-        col6, col7, col8 = st.columns(3)
-        col6.metric("SA1", str(len(dataframe.loc[(dataframe['Severity'] == "SA1") & (dataframe['Over/Within'] == "Over")])))
-        col7.metric("SA2", str(len(dataframe.loc[(dataframe['Severity'] == "SA2") & (dataframe['Over/Within'] == "Over")])))
-        col8.metric("SA3", str(len(dataframe.loc[(dataframe['Severity'] == "SA3") & (dataframe['Over/Within'] == "Over")])))
-
-        col9, col10, col11 = st.columns(3)
-        col9.metric("SA4", str(len(dataframe.loc[(dataframe['Severity'] == "SA4") & (dataframe['Over/Within'] == "Over")])))
-        col10.metric("SA5", str(len(dataframe.loc[(dataframe['Severity'] == "SA5") & (dataframe['Over/Within'] == "Over")])))
-        col11.metric("SA6", str(len(dataframe.loc[(dataframe['Severity'] == "SA6") & (dataframe['Over/Within'] == "Over")])))
-    
-
+        
     with st.container():
         df = dataframe.sort_values(by="Fault Date")
         dataSyncAll = df[df['Over/Within'] == "Over"]
@@ -85,7 +66,24 @@ if uploaded_file is not None:
             if select_severity != "All" and select != "All":
                 df = dataframe.sort_values(by="Fault Date")
                 dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Activity'] == select) & (df['Severity'] == select_severity)]
+        
+        st.warning("Summary Over SLA")
+        col1, col2, col3, col4, col5 = st.columns(5)
+        col1.metric("NSA1", str(len(dataSync.loc[(dataSync['Severity'] == "NSA1")])))
+        col2.metric("NSA2", str(len(dataSync.loc[(dataSync['Severity'] == "NSA2")])))
+        col3.metric("NSA3", str(len(dataSync.loc[(dataSync['Severity'] == "NSA3")])))
+        col4.metric("NSA4", str(len(dataSync.loc[(dataSync['Severity'] == "NSA4")])))
+        col5.metric("PSA3", str(len(dataSync.loc[(dataSync['Severity'] == "PSA3")])))
 
+        col6, col7, col8 = st.columns(3)
+        col6.metric("SA1", str(len(dataSync.loc[(dataSync['Severity'] == "SA1")])))
+        col7.metric("SA2", str(len(dataSync.loc[(dataSync['Severity'] == "SA2")])))
+        col8.metric("SA3", str(len(dataSync.loc[(dataSync['Severity'] == "SA3")])))
+
+        col9, col10, col11 = st.columns(3)
+        col9.metric("SA4", str(len(dataSync.loc[(dataSync['Severity'] == "SA4")])))
+        col10.metric("SA5", str(len(dataSync.loc[(dataSync['Severity'] == "SA5")])))
+        col11.metric("SA6", str(len(dataSync.loc[(dataSync['Severity'] == "SA6")])))
         st.subheader('Data Table')
         st.write(dataSync)
 
@@ -93,7 +91,6 @@ if uploaded_file is not None:
 
         for index, value in dataSyncAll.iterrows():
             nop_list.append([value['Activity'],date_change(value['Fault Date'])])
-
         date_list = []
         
         for v in nop_list:
@@ -135,30 +132,63 @@ if uploaded_file is not None:
         a.resize(7,len(date_list))
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
-        fig.add_trace(
-            go.Scatter(x=date_list, y=a[0], name="PCB",mode='lines+markers',line_shape='spline'),secondary_y=False,
-        )
-        fig.add_trace(
-            go.Scatter(x=date_list, y=a[1], name="TAK",mode='lines+markers',line_shape='spline'),secondary_y=False,
-        )
-        fig.add_trace(
-            go.Scatter(x=date_list, y=a[2], name="PSN",mode='lines+markers',line_shape='spline'),secondary_y=False,
-        )
-        fig.add_trace(
-            go.Scatter(x=date_list, y=a[3], name="SKT",mode='lines+markers',line_shape='spline'),secondary_y=False,
-        )
-        fig.add_trace(
-            go.Scatter(x=date_list, y=a[4], name="KPP",mode='lines+markers',line_shape='spline'),secondary_y=False,
-        )
-        fig.add_trace(
-            go.Scatter(x=date_list, y=a[5], name="PCT",mode='lines+markers',line_shape='spline'),secondary_y=False,
-        )
-        fig.add_trace(
-            go.Scatter(x=date_list, y=a[6], name="UTR",mode='lines+markers',line_shape='spline'),secondary_y=False,
-        )
-        fig.update_layout(title='Graph Analysis Over SLA',
-                   xaxis_title='Month',
-                   yaxis_title='Over Fault')
+        if select == "All":
+            fig.add_trace(
+                go.Scatter(x=date_list, y=a[0], name="PCB",mode='lines+markers',line_shape='spline',line=dict(dash='dot')),secondary_y=False,
+            )
+            fig.add_trace(
+                go.Scatter(x=date_list, y=a[1], name="TAK",mode='lines+markers',line_shape='spline'),secondary_y=False,
+            )
+            fig.add_trace(
+                go.Scatter(x=date_list, y=a[2], name="PSN",mode='lines+markers',line_shape='spline',line=dict(dash='dot')),secondary_y=False,
+            )
+            fig.add_trace(
+                go.Scatter(x=date_list, y=a[3], name="SKT",mode='lines+markers',line_shape='spline'),secondary_y=False,
+            )
+            fig.add_trace(
+                go.Scatter(x=date_list, y=a[4], name="KPP",mode='lines+markers',line_shape='spline',line=dict(dash='dot')),secondary_y=False,
+            )
+            fig.add_trace(
+                go.Scatter(x=date_list, y=a[5], name="PCT",mode='lines+markers',line_shape='spline'),secondary_y=False,
+            )
+            fig.add_trace(
+                go.Scatter(x=date_list, y=a[6], name="UTR",mode='lines+markers',line_shape='spline',line=dict(dash='dot')),secondary_y=False,
+            )
+            fig.update_layout(title='Graph Analysis Over SLA',
+                xaxis_title='Month',
+                yaxis_title='Over Fault')
+        else:
+            if select == "R1LN-PCB-NOP":
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=a[0], name="PCB",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                )
+            if select == "R1LN-TAK-NOP":
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=a[1], name="TAK",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                )
+            if select == "R1LN-PSN-NOP":
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=a[2], name="PSN",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                )
+            if select == "R1LN-SKT-NOP":
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=a[3], name="SKT",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                )
+            if select == "R1LN-KPP-NOP":
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=a[4], name="KPP",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                )
+            if select == "R1LN-PCT-NOP":
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=a[5], name="PCT",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                )
+            if select == "R1LN-UTR-NOP":
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=a[6], name="UTR",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                )
+            fig.update_layout(title='Graph Analysis Over SLA',
+                xaxis_title='Month',
+                yaxis_title='Over Fault')
         st.subheader('Graph Analysis')
         st.write(fig)
 
