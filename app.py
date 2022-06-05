@@ -8,11 +8,15 @@ import numpy as np
 import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+from PIL import Image
+image = Image.open('true.png')
 
 st.title('TRUE - Analysis Data')
 st.write("""
     Over SLA
 """)
+
+st.image(image)
 
 st.sidebar.title("Filter Data")
 
