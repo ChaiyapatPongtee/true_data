@@ -1,4 +1,5 @@
 import array
+from re import I
 from unittest import result
 import streamlit as st
 import pandas as pd
@@ -39,15 +40,20 @@ select_severity = st.sidebar.selectbox('Severity:', severity_list, key='1')
 # else:
 #     st.sidebar.error('Error: End date must fall after start date.')
 
-
+week = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 def date_change(date):
     return date.strftime("%Y-%m-%d")
+def day_change(date):
+    return date.strftime("%A")
+def index_arr(day):
+    return week.index(day)
+
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>',unsafe_allow_html=True)
 uploaded_file = st.file_uploader("Choose a file",type=["xls","xlsx"])
 
 if uploaded_file is not None:
-    dataframe = pd.read_excel(uploaded_file,sheet_name=1)
+    dataframe = pd.read_excel(uploaded_file,sheet_name="Raw Data Ticket ROM_3")
         
     with st.container():
         df = dataframe.sort_values(by="Fault Date")
@@ -90,12 +96,47 @@ if uploaded_file is not None:
         nop_list = []
 
         for index, value in dataSyncAll.iterrows():
-            nop_list.append([value['Activity'],date_change(value['Fault Date'])])
+            nop_list.append([value['Activity'],date_change(value['Fault Date']),day_change(value['Fault Date'])])
+
+
         date_list = []
         
+        week_data = []
+        #first value -> last value.count / 7
+        #loop day push in week
+        #check first date_change then return index array
+
+        #find first day start
+        first = day_change(dataSyncAll.iloc[0][3])
+
+        #append week to last array
+        chk,cwk = 0,0
+        wek = []
+        j = 1
+        day_in_week = []
+        for v in nop_list:
+            #check first loop
+            if chk < 1:
+                i = index_arr(first)
+                chk = chk + 1
+            if i <= 6:
+                if v[1] not in day_in_week:
+                    day_in_week.append(v[1])
+                i = i + 1
+            else:
+                wek.append(["Week" + str(j),day_in_week])
+                day_in_week = []
+                i = 0
+                j = j + 1
+                #return week = week + 1
+                #new week
+        print(wek)
+
         for v in nop_list:
             if v[1] not in date_list:
                 date_list.append(v[1])
+
+        #first value -> saturday
 
         data_clean = []
 
@@ -105,6 +146,9 @@ if uploaded_file is not None:
         #loop for date
         for d in date_list:
             for n in nop_list:
+                #check in week?
+                #return function find_week
+                #Loop value = value +1 in week
                 if n[1] == d:
                     if n[0] == 'R1LN-PCB-NOP':
                         pcb = pcb + 1
