@@ -13,9 +13,9 @@ from PIL import Image
 image = Image.open('true.png')
 
 st.title('TRUE - Analysis Data')
-st.write("""
-    Over SLA
-""")
+# st.write("""
+#     Over SLA
+# """)
 
 st.sidebar.image(image)
 
@@ -24,21 +24,10 @@ st.sidebar.title("Filter Data")
 country_list = ["All","R1LN-PSN-NOP","R1LN-SKT-NOP","R1LN-KPP-NOP", "R1LN-TAK-NOP","R1LN-PCB-NOP","R1LN-PCT-NOP","R1LN-UTR-NOP"]
 severity_list = ["All","NSA1", "NSA2", "NSA3", "NSA4", "PSA3","SA1", "SA2","SA3","SA4","SA5","SA6"]
 
-# start_d = st.sidebar.date_input(
-#      "Start Fault Date",
-#      datetime.datetime.now())
-
-# end_d = st.sidebar.date_input(
-#      "End Fault Date",
-#      datetime.datetime.now())
 
 select = st.sidebar.selectbox('NOP :', country_list, key='1')
 select_severity = st.sidebar.selectbox('Severity:', severity_list, key='1')
 
-# if start_d <= end_d:
-#     st.sidebar.success('Start date: `%s` \n\nEnd date: `%s`' % (start_d, end_d))
-# else:
-#     st.sidebar.error('Error: End date must fall after start date.')
 
 week = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 def date_change(date):
@@ -53,27 +42,44 @@ with open('style.css') as f:
 uploaded_file = st.file_uploader("Choose a file",type=["xls","xlsx"])
 
 if uploaded_file is not None:
-    dataframe = pd.read_excel(uploaded_file,sheet_name="Raw Data Ticket ROM_3")
-        
+    try:
+        dataframe = pd.read_excel(uploaded_file,sheet_name="Raw Data Ticket ROM_3")
+    except Exception as e:
+        st.error("Error : Sheet ที่ชื่อว่า Raw Data Ticket ROM_3 หรือ Column ในไฟล์ไม่สมบูรณ์ กรุณาตรวจสอบครับ")
     with st.container():
         df = dataframe.sort_values(by="Fault Date")
-        dataSyncAll = df[df['Over/Within'] == "Over"]
 
+        start_d = st.sidebar.date_input("Start Fault Date",pd.to_datetime(df['Fault Date'].iloc[0]))
+        #find start value
+        end_d = st.sidebar.date_input("End Fault Date",pd.to_datetime(df['Fault Date'].iloc[-1]))
+                #find end value
+
+        if start_d > end_d:
+            st.sidebar.error('กรุณาตรวจสอบวันที่ให้ถูกต้องครับ')
+        else:
+            pass
+        #print(pd.to_datetime(df['Fault Date'],format='%Y-%m-%d'))
+        #print(pd.to_datetime(start_d,format='%Y-%m-%d'))
+    
+        dataSync = df.loc[(df['Over/Within'] == "Over") & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
+        #dataSyncAll = df[df['Over/Within'] == "Over"]
+        #.str.contains("ball")
+        #.str[:10]
         if select == "All" and select_severity == "All":
             df = dataframe.sort_values(by="Fault Date")
-            dataSync = df[df['Over/Within'] == "Over"]
+            dataSync = df.loc[(df['Over/Within'] == "Over") & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
         else:
             if select != "All" and select_severity == "All":
                 df = dataframe.sort_values(by="Fault Date")
-                dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Activity'] == select)]
+                dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Activity'] == select) & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
             if select_severity != "All" and select == "All":
                 df = dataframe.sort_values(by="Fault Date")
-                dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Severity'] == select_severity)]
+                dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Severity'] == select_severity) & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
             if select_severity != "All" and select != "All":
                 df = dataframe.sort_values(by="Fault Date")
-                dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Activity'] == select) & (df['Severity'] == select_severity)]
+                dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Activity'] == select) & (df['Severity'] == select_severity) & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
         
-        st.warning("Summary Over SLA")
+        st.success("Summary Over SLA")
         col1, col2, col3, col4, col5 = st.columns(5)
         col1.metric("NSA1", str(len(dataSync.loc[(dataSync['Severity'] == "NSA1")])))
         col2.metric("NSA2", str(len(dataSync.loc[(dataSync['Severity'] == "NSA2")])))
@@ -95,7 +101,7 @@ if uploaded_file is not None:
 
         nop_list = []
 
-        for index, value in dataSyncAll.iterrows():
+        for index, value in dataSync.iterrows():
             nop_list.append([value['Activity'],date_change(value['Fault Date']),day_change(value['Fault Date'])])
 
 
@@ -107,30 +113,30 @@ if uploaded_file is not None:
         #check first date_change then return index array
 
         #find first day start
-        first = day_change(dataSyncAll.iloc[0][3])
+        # first = day_change(dataSyncAll.iloc[0][3])
 
-        #append week to last array
-        chk,cwk = 0,0
-        wek = []
-        j = 1
-        day_in_week = []
-        for v in nop_list:
-            #check first loop
-            if chk < 1:
-                i = index_arr(first)
-                chk = chk + 1
-            if i <= 6:
-                if v[1] not in day_in_week:
-                    day_in_week.append(v[1])
-                i = i + 1
-            else:
-                wek.append(["Week" + str(j),day_in_week])
-                day_in_week = []
-                i = 0
-                j = j + 1
-                #return week = week + 1
-                #new week
-        print(wek)
+        # #append week to last array
+        # chk,cwk = 0,0
+        # wek = []
+        # j = 1
+        # day_in_week = []
+        # for v in nop_list:
+        #     #check first loop
+        #     if chk < 1:
+        #         i = index_arr(first)
+        #         chk = chk + 1
+        #     if i <= 6:
+        #         if v[1] not in day_in_week:
+        #             day_in_week.append(v[1])
+        #         i = i + 1
+        #     else:
+        #         wek.append(["Week" + str(j),day_in_week])
+        #         day_in_week = []
+        #         i = 0
+        #         j = j + 1
+        #         #return week = week + 1
+        #         #new week
+        # #print(wek)
 
         for v in nop_list:
             if v[1] not in date_list:
@@ -178,25 +184,25 @@ if uploaded_file is not None:
         fig = make_subplots(specs=[[{"secondary_y": True}]])
         if select == "All":
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[0], name="PCB",mode='lines+markers',line_shape='spline',line=dict(dash='dot')),secondary_y=False,
+                go.Scatter(x=date_list, y=a[0], name="PCB",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[1], name="TAK",mode='lines+markers',line_shape='spline'),secondary_y=False,
+                go.Scatter(x=date_list, y=a[1], name="TAK",mode='lines+markers'),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[2], name="PSN",mode='lines+markers',line_shape='spline',line=dict(dash='dot')),secondary_y=False,
+                go.Scatter(x=date_list, y=a[2], name="PSN",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[3], name="SKT",mode='lines+markers',line_shape='spline'),secondary_y=False,
+                go.Scatter(x=date_list, y=a[3], name="SKT",mode='lines+markers'),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[4], name="KPP",mode='lines+markers',line_shape='spline',line=dict(dash='dot')),secondary_y=False,
+                go.Scatter(x=date_list, y=a[4], name="KPP",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[5], name="PCT",mode='lines+markers',line_shape='spline'),secondary_y=False,
+                go.Scatter(x=date_list, y=a[5], name="PCT",mode='lines+markers'),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[6], name="UTR",mode='lines+markers',line_shape='spline',line=dict(dash='dot')),secondary_y=False,
+                go.Scatter(x=date_list, y=a[6], name="UTR",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
             )
             fig.update_layout(title='Graph Analysis Over SLA',
                 xaxis_title='Month',
