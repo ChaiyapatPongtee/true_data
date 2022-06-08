@@ -230,25 +230,25 @@ if uploaded_file is not None:
         fig = make_subplots(specs=[[{"secondary_y": True}]])
         if select == "All":
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[0], name="PCB",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                go.Scatter(x=date_list, y=a[0], name="PCB-Over",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[1], name="TAK",mode='lines+markers'),secondary_y=False,
+                go.Scatter(x=date_list, y=a[1], name="TAK-Over",mode='lines+markers'),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[2], name="PSN",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                go.Scatter(x=date_list, y=a[2], name="PSN-Over",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[3], name="SKT",mode='lines+markers'),secondary_y=False,
+                go.Scatter(x=date_list, y=a[3], name="SKT-Over",mode='lines+markers'),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[4], name="KPP",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                go.Scatter(x=date_list, y=a[4], name="KPP-Over",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[5], name="PCT",mode='lines+markers'),secondary_y=False,
+                go.Scatter(x=date_list, y=a[5], name="PCT-Over",mode='lines+markers'),secondary_y=False,
             )
             fig.add_trace(
-                go.Scatter(x=date_list, y=a[6], name="UTR",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                go.Scatter(x=date_list, y=a[6], name="UTR-Over",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
             )
             fig.update_layout(
                 xaxis_title='Month',
