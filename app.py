@@ -11,8 +11,11 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from PIL import Image
 image = Image.open('true.png')
-
+st.set_page_config(page_title="TRUE - Analysis Data UPC2",page_icon="🧊",
+     layout="wide",
+     initial_sidebar_state="expanded")
 st.title('TRUE - Analysis Data UPC2')
+
 # st.write("""
 #     Over SLA
 # """)
