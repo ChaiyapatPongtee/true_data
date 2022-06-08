@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 from PIL import Image
 image = Image.open('true.png')
 
-st.title('TRUE - Analysis Data')
+st.title('TRUE - Analysis Data UPC2')
 # st.write("""
 #     Over SLA
 # """)
