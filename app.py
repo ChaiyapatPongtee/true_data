@@ -285,7 +285,7 @@ if uploaded_file is not None:
 
             if select == "R1LN-TAK-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[1], name="TAK",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[1], name="TAK-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
                 fig.add_trace(
                     go.Scatter(x=date_list, y=b[1], name="TAK-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
@@ -312,7 +312,7 @@ if uploaded_file is not None:
                 fig2.update_layout(barmode="relative")
             if select == "R1LN-PSN-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[2], name="PSN",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[2], name="PSN-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
                 fig.add_trace(
                     go.Scatter(x=date_list, y=b[2], name="PSN-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
@@ -339,7 +339,7 @@ if uploaded_file is not None:
                 fig2.update_layout(barmode="relative")
             if select == "R1LN-SKT-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[3], name="SKT",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[3], name="SKT-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
                 fig.add_trace(
                     go.Scatter(x=date_list, y=b[3], name="SKT-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
@@ -366,7 +366,7 @@ if uploaded_file is not None:
                 fig2.update_layout(barmode="relative")
             if select == "R1LN-KPP-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[4], name="KPP",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[4], name="KPP-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
                 fig.add_trace(
                     go.Scatter(x=date_list, y=b[4], name="KPP-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
