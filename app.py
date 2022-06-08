@@ -58,27 +58,33 @@ if uploaded_file is not None:
             st.sidebar.error('กรุณาตรวจสอบวันที่ให้ถูกต้องครับ')
         else:
             pass
-        #print(pd.to_datetime(df['Fault Date'],format='%Y-%m-%d'))
-        #print(pd.to_datetime(start_d,format='%Y-%m-%d'))
     
         dataSync = df.loc[(df['Over/Within'] == "Over") & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
+        dataWithin = df.loc[(df['Over/Within'] == "Within") & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
         #dataSyncAll = df[df['Over/Within'] == "Over"]
         #.str.contains("ball")
         #.str[:10]
         if select == "All" and select_severity == "All":
             df = dataframe.sort_values(by="Fault Date")
             dataSync = df.loc[(df['Over/Within'] == "Over") & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
+            dataWithin = df.loc[(df['Over/Within'] == "Within") & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
+
         else:
             if select != "All" and select_severity == "All":
                 df = dataframe.sort_values(by="Fault Date")
                 dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Activity'] == select) & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
+                dataWithin = df.loc[(df['Over/Within'] == "Within") & (df['Activity'] == select) & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
+
             if select_severity != "All" and select == "All":
                 df = dataframe.sort_values(by="Fault Date")
                 dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Severity'] == select_severity) & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
+                dataWithin = df.loc[(df['Over/Within'] == "Within") & (df['Severity'] == select_severity) & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
+
             if select_severity != "All" and select != "All":
                 df = dataframe.sort_values(by="Fault Date")
                 dataSync = df.loc[(df['Over/Within'] == "Over") & (df['Activity'] == select) & (df['Severity'] == select_severity) & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
-        
+                dataWithin = df.loc[(df['Over/Within'] == "Within") & (df['Activity'] == select) & (df['Severity'] == select_severity) & (pd.to_datetime(df['Fault Date']) >= pd.to_datetime(start_d)) & (pd.to_datetime(df['Fault Date']) <= pd.to_datetime(end_d))]
+
         st.success("Summary Over SLA")
         col1, col2, col3, col4, col5 = st.columns(5)
         col1.metric("NSA1", str(len(dataSync.loc[(dataSync['Severity'] == "NSA1")])))
@@ -100,10 +106,12 @@ if uploaded_file is not None:
         st.write(dataSync)
 
         nop_list = []
+        nop_list_within = []
 
         for index, value in dataSync.iterrows():
             nop_list.append([value['Activity'],date_change(value['Fault Date']),day_change(value['Fault Date'])])
-
+        for index, value in dataWithin.iterrows():
+            nop_list_within.append([value['Activity'],date_change(value['Fault Date']),day_change(value['Fault Date'])])
 
         date_list = []
         
@@ -147,8 +155,11 @@ if uploaded_file is not None:
         data_clean = []
 
         pcb, tak, psn, skt, kpp, pct, utr = 0,0,0,0,0,0,0
+        pcb_w, tak_w, psn_w, skt_w, kpp_w, pct_w, utr_w = 0,0,0,0,0,0,0
         n_list = ['R1LN-PCB-NOP','R1LN-TAK-NOP','R1LN-PSN-NOP','R1LN-SKT-NOP','R1LN-KPP-NOP','R1LN-PCT-NOP','R1LN-UTR-NOP']
         lldot = []
+
+        llwithin = []
         #loop for date
         for d in date_list:
             for n in nop_list:
@@ -175,11 +186,46 @@ if uploaded_file is not None:
 
             list_dot = [pcb, tak, psn, skt, kpp, pct, utr]
             lldot.append(list_dot)
+
             pcb, tak, psn, skt, kpp, pct, utr = 0,0,0,0,0,0,0
+
+        for d in date_list:
+            for n in nop_list_within:
+                #check in week?
+                #return function find_week
+                #Loop value = value +1 in week
+                if n[1] == d:
+                    if n[0] == 'R1LN-PCB-NOP':
+                        pcb_w = pcb_w + 1
+                    if n[0] == 'R1LN-TAK-NOP':
+                        tak_w = tak_w + 1
+                    if n[0] == 'R1LN-PSN-NOP':
+                        psn_w = psn_w + 1
+                    if n[0] == 'R1LN-SKT-NOP':
+                        skt_w = skt_w + 1
+                    if n[0] == 'R1LN-KPP-NOP':
+                        kpp_w = kpp_w + 1
+                    if n[0] == 'R1LN-PCT-NOP':
+                        pct_w = pct_w + 1
+                    if n[0] == 'R1LN-UTR-NOP':
+                        utr_w = utr_w + 1
+                else:
+                    pass
+            
+            list_within = [pcb_w, tak_w, psn_w, skt_w, kpp_w, pct_w, utr_w]
+            llwithin.append(list_within)
+
+            pcb_w, tak_w, psn_w, skt_w, kpp_w, pct_w, utr_w = 0,0,0,0,0,0,0
             
   
         a = np.array(lldot)
         a.resize(7,len(date_list))
+
+        b = np.array(llwithin)
+        b.resize(7,len(date_list))
+        #print(b)
+
+        fig2 = go.Figure()
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
         if select == "All":
@@ -204,43 +250,208 @@ if uploaded_file is not None:
             fig.add_trace(
                 go.Scatter(x=date_list, y=a[6], name="UTR",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
             )
-            fig.update_layout(title='Graph Analysis Over SLA',
+            fig.update_layout(
                 xaxis_title='Month',
                 yaxis_title='Over Fault')
+            
         else:
             if select == "R1LN-PCB-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[0], name="PCB",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[0], name="PCB-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=b[0], name="PCB-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
+                )
+                fig.add_trace(go.Bar(
+                    y=a[0],
+                    x=date_list,
+                    name='PCB-Bar-Over',
+                    marker_color="#990F02",
+                    opacity=0.5,
+                    width=[3]
+                ))
+                fig.add_trace(go.Bar(
+                    y=b[0],
+                    x=date_list,
+                    name='PCB-Bar-Within',
+                    opacity=0.5,
+                    marker_color="#5DBB63",
+                    width=[3]
+                ))
+                fig2.update_layout(title="Analysis By Province PCB")
+                fig2.add_bar(x=date_list,y=a[0],name="PCB-Over",marker_color="#BC544B")
+                fig2.add_bar(x=date_list,y=b[0],name="PCB-Within",marker_color="#1F456E")
+                fig2.update_layout(barmode="relative")
+
             if select == "R1LN-TAK-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[1], name="TAK",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[1], name="TAK",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=b[1], name="TAK-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
+                )
+                fig.add_trace(go.Bar(
+                    y=a[1],
+                    x=date_list,
+                    name='TAK-Bar-Over',
+                    marker_color="#990F02",
+                    opacity=0.5,
+                    width=[3]
+                ))
+                fig.add_trace(go.Bar(
+                    y=b[1],
+                    x=date_list,
+                    name='TAK-Bar-Within',
+                    opacity=0.5,
+                    marker_color="#5DBB63",
+                    width=[3]
+                ))
+                fig2.update_layout(title="Analysis By Province PCB")
+                fig2.add_bar(x=date_list,y=a[1],name="TAK-Over",marker_color="#BC544B")
+                fig2.add_bar(x=date_list,y=b[1],name="TAK-Within",marker_color="#1F456E")
+                fig2.update_layout(barmode="relative")
             if select == "R1LN-PSN-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[2], name="PSN",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[2], name="PSN",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=b[2], name="PSN-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
+                )
+                fig.add_trace(go.Bar(
+                    y=a[2],
+                    x=date_list,
+                    name='PSN-Bar-Over',
+                    marker_color="#990F02",
+                    opacity=0.5,
+                    width=[3]
+                ))
+                fig.add_trace(go.Bar(
+                    y=b[2],
+                    x=date_list,
+                    name='PSN-Bar-Within',
+                    opacity=0.5,
+                    marker_color="#5DBB63",
+                    width=[3]
+                ))
+                fig2.update_layout(title="Analysis By Province PSN")
+                fig2.add_bar(x=date_list,y=a[2],name="PSN-Over",marker_color="#BC544B")
+                fig2.add_bar(x=date_list,y=b[2],name="PSN-Within",marker_color="#1F456E")
+                fig2.update_layout(barmode="relative")
             if select == "R1LN-SKT-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[3], name="SKT",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[3], name="SKT",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=b[3], name="SKT-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
+                )
+                fig.add_trace(go.Bar(
+                    y=a[3],
+                    x=date_list,
+                    name='SKT-Bar-Over',
+                    marker_color="#990F02",
+                    opacity=0.5,
+                    width=[3]
+                ))
+                fig.add_trace(go.Bar(
+                    y=b[3],
+                    x=date_list,
+                    name='SKT-Bar-Within',
+                    opacity=0.5,
+                    marker_color="#5DBB63",
+                    width=[3]
+                ))
+                fig2.update_layout(title="Analysis By Province SKT")
+                fig2.add_bar(x=date_list,y=a[3],name="SKT-Over",marker_color="#BC544B")
+                fig2.add_bar(x=date_list,y=b[3],name="SKT-Within",marker_color="#1F456E")
+                fig2.update_layout(barmode="relative")
             if select == "R1LN-KPP-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[4], name="KPP",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[4], name="KPP",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=b[4], name="KPP-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
+                )
+                fig.add_trace(go.Bar(
+                    y=a[4],
+                    x=date_list,
+                    name='KPP-Bar-Over',
+                    marker_color="#990F02",
+                    opacity=0.5,
+                    width=[3]
+                ))
+                fig.add_trace(go.Bar(
+                    y=b[4],
+                    x=date_list,
+                    name='KPP-Bar-Within',
+                    opacity=0.5,
+                    marker_color="#5DBB63",
+                    width=[3]
+                ))
+                fig2.update_layout(title="Analysis By Province KPP")
+                fig2.add_bar(x=date_list,y=a[4],name="KPP-Over",marker_color="#BC544B")
+                fig2.add_bar(x=date_list,y=b[4],name="KPP-Within",marker_color="#1F456E")
+                fig2.update_layout(barmode="relative")
             if select == "R1LN-PCT-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[5], name="PCT",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[5], name="PCT-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=b[5], name="PCT-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
+                )
+                fig.add_trace(go.Bar(
+                    y=a[5],
+                    x=date_list,
+                    name='PCT-Bar-Over',
+                    marker_color="#990F02",
+                    opacity=0.5,
+                    width=[3]
+                ))
+                fig.add_trace(go.Bar(
+                    y=b[5],
+                    x=date_list,
+                    name='PCT-Bar-Within',
+                    opacity=0.5,
+                    marker_color="#5DBB63",
+                    width=[3]
+                ))
+                fig2.update_layout(title="Analysis By Province PCT")
+                fig2.add_bar(x=date_list,y=a[5],name="PCT-Over",marker_color="#BC544B")
+                fig2.add_bar(x=date_list,y=b[5],name="PCT-Within",marker_color="#1F456E")
+                fig2.update_layout(barmode="relative")
             if select == "R1LN-UTR-NOP":
                 fig.add_trace(
-                    go.Scatter(x=date_list, y=a[6], name="UTR",mode='lines+markers',line=dict(dash='dot')),secondary_y=False,
+                    go.Scatter(x=date_list, y=a[6], name="UTR-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
                 )
+                fig.add_trace(
+                    go.Scatter(x=date_list, y=b[6], name="UTR-Within",mode='lines+markers',line=dict(color="#5DBB63")),secondary_y=False,
+                )
+                fig.add_trace(go.Bar(
+                    y=a[6],
+                    x=date_list,
+                    name='UTR-Bar-Over',
+                    marker_color="#990F02",
+                    opacity=0.5,
+                    width=[3]
+                ))
+                fig.add_trace(go.Bar(
+                    y=b[6],
+                    x=date_list,
+                    name='UTR-Bar-Within',
+                    opacity=0.5,
+                    marker_color="#5DBB63",
+                    width=[3]
+                ))
+                fig2.update_layout(title="Analysis By Province UTR")
+                fig2.add_bar(x=date_list,y=a[6],name="UTR-Over",marker_color="#BC544B")
+                fig2.add_bar(x=date_list,y=b[6],name="UTR-Within",marker_color="#1F456E")
+                fig2.update_layout(barmode="relative")
             fig.update_layout(title='Graph Analysis Over SLA',
                 xaxis_title='Month',
                 yaxis_title='Over Fault')
         st.subheader('Graph Analysis')
         st.write(fig)
+        if select != "All":
+            st.write(fig2)
 
 
 
