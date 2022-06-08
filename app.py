@@ -1,5 +1,6 @@
 import array
 from re import I
+from turtle import width
 from unittest import result
 import streamlit as st
 import pandas as pd
@@ -255,7 +256,7 @@ if uploaded_file is not None:
             )
             fig.update_layout(
                 xaxis_title='Month',
-                yaxis_title='Over Fault')
+                yaxis_title='Over Fault',width=1300)
             
         else:
             if select == "R1LN-PCB-NOP":
@@ -284,7 +285,7 @@ if uploaded_file is not None:
                 fig2.update_layout(title="Analysis By Province PCB")
                 fig2.add_bar(x=date_list,y=a[0],name="PCB-Over",marker_color="#BC544B")
                 fig2.add_bar(x=date_list,y=b[0],name="PCB-Within",marker_color="#1F456E")
-                fig2.update_layout(barmode="relative")
+                fig2.update_layout(barmode="relative",width=1300)
 
             if select == "R1LN-TAK-NOP":
                 fig.add_trace(
@@ -312,7 +313,7 @@ if uploaded_file is not None:
                 fig2.update_layout(title="Analysis By Province PCB")
                 fig2.add_bar(x=date_list,y=a[1],name="TAK-Over",marker_color="#BC544B")
                 fig2.add_bar(x=date_list,y=b[1],name="TAK-Within",marker_color="#1F456E")
-                fig2.update_layout(barmode="relative")
+                fig2.update_layout(barmode="relative",width=1300)
             if select == "R1LN-PSN-NOP":
                 fig.add_trace(
                     go.Scatter(x=date_list, y=a[2], name="PSN-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
@@ -339,7 +340,7 @@ if uploaded_file is not None:
                 fig2.update_layout(title="Analysis By Province PSN")
                 fig2.add_bar(x=date_list,y=a[2],name="PSN-Over",marker_color="#BC544B")
                 fig2.add_bar(x=date_list,y=b[2],name="PSN-Within",marker_color="#1F456E")
-                fig2.update_layout(barmode="relative")
+                fig2.update_layout(barmode="relative",width=1300)
             if select == "R1LN-SKT-NOP":
                 fig.add_trace(
                     go.Scatter(x=date_list, y=a[3], name="SKT-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
@@ -366,7 +367,7 @@ if uploaded_file is not None:
                 fig2.update_layout(title="Analysis By Province SKT")
                 fig2.add_bar(x=date_list,y=a[3],name="SKT-Over",marker_color="#BC544B")
                 fig2.add_bar(x=date_list,y=b[3],name="SKT-Within",marker_color="#1F456E")
-                fig2.update_layout(barmode="relative")
+                fig2.update_layout(barmode="relative",width=1300)
             if select == "R1LN-KPP-NOP":
                 fig.add_trace(
                     go.Scatter(x=date_list, y=a[4], name="KPP-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
@@ -393,7 +394,7 @@ if uploaded_file is not None:
                 fig2.update_layout(title="Analysis By Province KPP")
                 fig2.add_bar(x=date_list,y=a[4],name="KPP-Over",marker_color="#BC544B")
                 fig2.add_bar(x=date_list,y=b[4],name="KPP-Within",marker_color="#1F456E")
-                fig2.update_layout(barmode="relative")
+                fig2.update_layout(barmode="relative",width=1300)
             if select == "R1LN-PCT-NOP":
                 fig.add_trace(
                     go.Scatter(x=date_list, y=a[5], name="PCT-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
@@ -420,7 +421,7 @@ if uploaded_file is not None:
                 fig2.update_layout(title="Analysis By Province PCT")
                 fig2.add_bar(x=date_list,y=a[5],name="PCT-Over",marker_color="#BC544B")
                 fig2.add_bar(x=date_list,y=b[5],name="PCT-Within",marker_color="#1F456E")
-                fig2.update_layout(barmode="relative")
+                fig2.update_layout(barmode="relative",width=1300)
             if select == "R1LN-UTR-NOP":
                 fig.add_trace(
                     go.Scatter(x=date_list, y=a[6], name="UTR-Over",mode='lines+markers',line=dict(dash='dot',color="#990F02")),secondary_y=False,
@@ -447,10 +448,10 @@ if uploaded_file is not None:
                 fig2.update_layout(title="Analysis By Province UTR")
                 fig2.add_bar(x=date_list,y=a[6],name="UTR-Over",marker_color="#BC544B")
                 fig2.add_bar(x=date_list,y=b[6],name="UTR-Within",marker_color="#1F456E")
-                fig2.update_layout(barmode="relative")
+                fig2.update_layout(barmode="relative",width=1300)
             fig.update_layout(title='Graph Analysis Over SLA',
                 xaxis_title='Month',
-                yaxis_title='Over Fault')
+                yaxis_title='Over Fault',width=1300)
         st.subheader('Graph Analysis')
         st.write(fig)
         if select != "All":
